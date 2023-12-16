@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter.messagebox import showerror
 from tkinter import filedialog
 import itertools
-import os
 
 # создание таблицы истинности по введеннеой логической фцнкции
 def truth_table(expression):
@@ -56,12 +55,13 @@ class PolynomZhegalkina:
             self.vector_f = new_vector
             nnn = len(new_vector)
             vector_new_vector.append(new_vector)
-        return vector_koef
+        return (vector_koef, vector_new_vector)
     
+    #создание полинома
     def create_polynom(self):
         polinom = []
         for i in range(len(self.matrix)):
-            if self.treygolnikPascal()[i] == 1:
+            if self.treygolnikPascal()[0][i] == 1:
                 s = ""
                 k = 0
                 for j in range(len(self.matrix[0]) - 1):
@@ -107,20 +107,46 @@ class Window:
         function = self.input_function.get()
         return function
     
+    #создание таблицы истинности для заданной функции
     def make_truth_table(self):
         table = truth_table(self.get_function())
         return table
     
+    #создание полинома
     def polynom(self):
         try:
-            plo = PolynomZhegalkina(self.make_truth_table())
+            self.plo = PolynomZhegalkina(self.make_truth_table())
             self.otvet_label = Label(root, text='Получившийся полином: ', bg='khaki', font='Arial, 15')
             self.otvet_label.place(x=10, y=170)
-            self.polynom_label = Label(root, text=str(plo.create_polynom()), bg='khaki', font='Arial, 15')
+            self.polynom_label = Label(root, text=str(self.plo.create_polynom()), bg='khaki', font='Arial, 15')
             self.polynom_label.place(x=234, y=170)
+            self.anim()
+
         except:
             showerror(title="Неверный алфавит!", message="Сообщение об ошибке")
 
+    #вывод отдельным окном таблицы истинности и треугольника Паскаля
+    def anim(self):
+        animation = Tk()
+        nt = Label(animation, text="Таблица истинности")
+        nt.grid(row=0, column=0)
+        rtk = 1
+        for t in self.make_truth_table():
+            newLabel = Label(animation, text=str(t))
+            newLabel.grid(row=rtk, column=0)
+            rtk += 1
+
+        ntr = Label(animation, text="Треугольник Паскаля")
+        ntr.grid(row=0, column=5)
+        rtk = 1
+        for p in self.plo.treygolnikPascal()[1]:
+            newlabel = Label(animation, text=str(p))
+            newlabel.grid(row=rtk, column=5)
+            rtk += 1
+
+        animation.mainloop()
+    
+    #очистка виджетов
     def clear(self):
         try:
             self.input_function.delete(0, 'end')
@@ -129,6 +155,7 @@ class Window:
         except:
             pass
 
+    #сохранение файла
     def save_file(self):
         file_path = filedialog.asksaveasfilename(defaultextension=".txt",
                                                 filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
@@ -138,6 +165,7 @@ class Window:
         except IOError:
             pass
 
+    #загрузка файла
     def load_from_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         try:
