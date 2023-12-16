@@ -152,6 +152,7 @@ class Window:
             self.input_function.delete(0, 'end')
             self.polynom_label.destroy()
             self.otvet_label.destroy()
+            self.plo.clear_polynom()
         except:
             pass
 
