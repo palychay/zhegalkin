@@ -127,6 +127,7 @@ class Window:
 
     #вывод отдельным окном таблицы истинности и треугольника Паскаля
     def anim(self):
+        
         animation = Tk()
         nt = Label(animation, text="Таблица истинности")
         nt.grid(row=0, column=0)
@@ -162,7 +163,22 @@ class Window:
                                                 filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         try:
             with open(file_path, 'w') as file:
-                file.write(self.get_function())
+                file.write(self.get_function() + '\n')
+                try:
+                    file.write("Получившийся полином: ")
+                    file.write(self.plo.create_polynom() + '\n')
+                    file.write("Таблица истинности\n")
+                    rtk = 1
+                    for t in self.make_truth_table():
+                        file.write(str(t) + '\n')
+                        rtk += 1
+                    file.write("Треугольник Паскаля\n")
+                    for p in self.plo.treygolnikPascal()[1]:
+                        file.write(str(p) + '\n')
+                        rtk += 1
+                except:
+                    pass
+
         except IOError:
             pass
 
@@ -171,10 +187,11 @@ class Window:
         file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         try:
             with open(file_path, 'r') as file:
-                loaded_text = file.read()
+                loaded_text = file.readline()
                 self.input_function.insert(0, loaded_text)
         except IOError:
             pass
+
 
 root = Tk()
 win = Window(root)
